@@ -21,6 +21,8 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
 
 
 /**
@@ -405,47 +407,48 @@ public class TelaRelatorio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAcessiActionPerformed
 
     private void btnenviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnenviarActionPerformed
-        if (txtdataInicial.getText().trim().isEmpty()|| txtdatafinal.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Todos os campos devem ser preenchidos.");
-        }
-        else {
-        try(Connection conexao = new Factory.ConnectionFactory().getConnection()) {
+      if (txtdataInicial.getText().trim().isEmpty() || txtdatafinal.getText().trim().isEmpty()) {
+    JOptionPane.showMessageDialog(null, "Todos os campos devem ser preenchidos.");
+} else {
+    try (Connection conexao = new Factory.ConnectionFactory().getConnection()) {
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
         java.util.Date dataInicialUtil = formato.parse(txtdataInicial.getText());
         java.util.Date dataFinalUtil = formato.parse(txtdatafinal.getText());
-
         java.sql.Date dataInicial = new java.sql.Date(dataInicialUtil.getTime());
         java.sql.Date dataFinal = new java.sql.Date(dataFinalUtil.getTime());
-        
+
         System.out.println("Data Inicial: " + dataInicial);
         System.out.println("Data Final: " + dataFinal);
-        String pasta = "C:\\Users\\junio\\OneDrive\\Documentos\\NetBeansProjects\\ProjetoJava2\\src\\main\\resources\\Relatorio\\RelatorioEstoque8.jasper";
+
+        // Caminho relativo dentro do classpath (resources)
+        InputStream relatorioStream = getClass().getResourceAsStream("/Relatorio/RelatorioEstoque8.jasper");
+
+        if (relatorioStream == null) {
+            throw new FileNotFoundException("Arquivo .jasper não encontrado no classpath.");
+        }
+
         Map<String, Object> datas = new HashMap<>();
         datas.put("dataInicial", dataInicial);
         datas.put("dataFinal", dataFinal);
 
-        JasperPrint jp = JasperFillManager.fillReport(pasta, datas, conexao);
+        JasperPrint jp = JasperFillManager.fillReport(relatorioStream, datas, conexao);
 
-        String relatorio = String.format("RelatorioEstoque.pdf",
-            txtdataInicial.getText().replace("/", "-"),
-            txtdatafinal.getText().replace("/", "-"));
-
+        String relatorio = "RelatorioEstoque.pdf";
         JasperExportManager.exportReportToPdfFile(jp, relatorio);
 
         File pdfGerado = new File(relatorio);
-            if (Desktop.isDesktopSupported()) {
-         Desktop desktop = Desktop.getDesktop();
-         if (pdfGerado.exists()) {
-             desktop.open(pdfGerado);
-         } else {
-             System.out.println("Arquivo PDF não encontrado.");
-         }
-      } 
-
+        if (Desktop.isDesktopSupported()) {
+            Desktop desktop = Desktop.getDesktop();
+            if (pdfGerado.exists()) {
+                desktop.open(pdfGerado);
+            } else {
+                System.out.println("Arquivo PDF não encontrado.");
+            }
+        }
     } catch (Exception e) {
         JOptionPane.showMessageDialog(null, "Erro ao gerar relatório: " + e.getMessage());
     }
-        }
+}
         
          // TODO add your handling code here:
     }//GEN-LAST:event_btnenviarActionPerformed
