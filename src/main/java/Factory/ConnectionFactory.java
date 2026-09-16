@@ -13,8 +13,12 @@ import java.sql.SQLException;
 public class ConnectionFactory {
     public Connection getConnection() {
         try {
-            return DriverManager.getConnection("jdbc:mysql://localhost/projetojava","root","");  
-        } 
+            String senha = System.getenv("MYSQL_ROOT_PASSWORD");
+            if (senha == null) {
+                senha = "";
+            }
+            return DriverManager.getConnection("jdbc:mysql://localhost/projetojava","root",senha);
+        }
         catch (SQLException excecao) {
             throw new RuntimeException(excecao);
         }

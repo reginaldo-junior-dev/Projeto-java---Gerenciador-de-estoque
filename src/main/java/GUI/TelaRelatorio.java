@@ -12,6 +12,8 @@ import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +23,6 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
 
 
 /**
@@ -420,18 +420,22 @@ public class TelaRelatorio extends javax.swing.JFrame {
         System.out.println("Data Inicial: " + dataInicial);
         System.out.println("Data Final: " + dataFinal);
 
-        // Caminho relativo dentro do classpath (resources)
-        InputStream relatorioStream = getClass().getResourceAsStream("/Relatorio/RelatorioEstoque8.jasper");
+        // Caminho relativo dentro do classpath (resources).
+        // O .jrxml é compilado aqui em tempo de execução, então basta editar
+        // o XML do relatório (não é necessário o Jaspersoft Studio instalado).
+        InputStream relatorioStream = getClass().getResourceAsStream("/Relatorio/RelatorioEstoque8.jrxml");
 
         if (relatorioStream == null) {
-            throw new FileNotFoundException("Arquivo .jasper não encontrado no classpath.");
+            throw new FileNotFoundException("Arquivo .jrxml não encontrado no classpath.");
         }
+
+        JasperReport relatorioCompilado = JasperCompileManager.compileReport(relatorioStream);
 
         Map<String, Object> datas = new HashMap<>();
         datas.put("dataInicial", dataInicial);
         datas.put("dataFinal", dataFinal);
 
-        JasperPrint jp = JasperFillManager.fillReport(relatorioStream, datas, conexao);
+        JasperPrint jp = JasperFillManager.fillReport(relatorioCompilado, datas, conexao);
 
         String relatorio = "RelatorioEstoque.pdf";
         JasperExportManager.exportReportToPdfFile(jp, relatorio);

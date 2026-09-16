@@ -525,34 +525,45 @@ public class TelaEstoque extends javax.swing.JFrame {
     }//GEN-LAST:event_txtnomeActionPerformed
 
     private void btnenviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnenviarActionPerformed
-        if (txtdata.getText().trim().isEmpty() || txtusado.getText().trim().isEmpty()) {
+        if (txtcod.getText().trim().isEmpty() || txtdata.getText().trim().isEmpty() || txtusado.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Todos os campos devem ser preenchidos.");
         }
         else {
+            try {
+                int id_alimento = Integer.parseInt(txtcod.getText());
 
-            Alimento alimento = new Alimento();
-            int id_alimento = Integer.parseInt(txtcod.getText());
-            
-            String dataTexto = txtdata.getText();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate data_ent_sai = LocalDate.parse(dataTexto, formatter);
-            String movimentacao = comboTipo.getSelectedItem().toString();
-            int quanti_usada = Integer.parseInt(txtusado.getText());
+                String dataTexto = txtdata.getText();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                LocalDate data_ent_sai = LocalDate.parse(dataTexto, formatter);
+                String movimentacao = comboTipo.getSelectedItem().toString();
+                int quanti_usada = Integer.parseInt(txtusado.getText());
 
-            EstoqueDAO dao = new EstoqueDAO();
-            dao.AdicionarEstoque(id_alimento, movimentacao, data_ent_sai, quanti_usada);
-            dao.AtualizarEstoque(id_alimento, quanti_usada, movimentacao);
+                EstoqueDAO dao = new EstoqueDAO();
 
+                Alimento alimentoExistente = dao.Tela(id_alimento);
+                if (alimentoExistente == null) {
+                    JOptionPane.showMessageDialog(this, "Alimento não encontrado.");
+                    return;
+                }
 
-            Alimento alimentoAtualizado = dao.Tela(id_alimento);
-            if (alimentoAtualizado.getQuantidade() <= 20) {
-                JOptionPane.showMessageDialog(this, "O estoque de " + txtnome.getText() + " está baixo");
+                dao.AdicionarEstoque(id_alimento, movimentacao, data_ent_sai, quanti_usada);
+                dao.AtualizarEstoque(id_alimento, quanti_usada, movimentacao);
+
+                Alimento alimentoAtualizado = dao.Tela(id_alimento);
+                if (alimentoAtualizado.getQuantidade() <= 20) {
+                    JOptionPane.showMessageDialog(this, "O estoque de " + txtnome.getText() + " está baixo");
+                }
+
+                JOptionPane.showMessageDialog(this, "Estoque atualizado com sucesso!");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Código ou quantidade inválidos.");
+            } catch (java.time.format.DateTimeParseException e) {
+                JOptionPane.showMessageDialog(this, "Data inválida.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao atualizar estoque: " + e.getMessage());
             }
+        }
 
-            JOptionPane.showMessageDialog(this, "Estoque atualizado com sucesso!");
-
-        }   
-   
 
         // TODO add your handling code here:
     }//GEN-LAST:event_btnenviarActionPerformed

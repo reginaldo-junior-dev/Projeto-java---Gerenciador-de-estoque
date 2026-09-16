@@ -6,7 +6,6 @@ package GUI;
 
 import DAO.AlimentoDAO;
 import Modelo.Alimento;
-import com.mycompany.projetojava2.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -503,21 +502,32 @@ if (selecionado != null && selecionado.endsWith("%")) {
     }//GEN-LAST:event_btnbuscarActionPerformed
 
     private void btnexcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnexcluirActionPerformed
+        if (txtcod.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Digite o código.");
+            return;
+        }
+
         int resposta = JOptionPane.showOptionDialog(null,"Deseja excluir este alimento?","Excluir",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null, new Object[] { "Sim", "Não" }, "Não");
 
         if (resposta == 0) {
-            int id = Integer.parseInt(txtcod.getText());
-            AlimentoDAO dao = new AlimentoDAO();
+            try {
+                int id = Integer.parseInt(txtcod.getText());
+                AlimentoDAO dao = new AlimentoDAO();
 
-            boolean sucesso = dao.excluir(id);
+                boolean sucesso = dao.excluir(id);
 
-            if (sucesso) {
-                JOptionPane.showMessageDialog(null, "Alimento excluído com sucesso!");
-                atualizarTabela(); 
-            } else {
-                JOptionPane.showMessageDialog(null, "Nenhum alimento foi excluído.");
+                if (sucesso) {
+                    JOptionPane.showMessageDialog(null, "Alimento excluído com sucesso!");
+                    atualizarTabela();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nenhum alimento foi excluído.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "ID inválido.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Erro ao excluir: " + e.getMessage());
             }
-        } 
+        }
         // TODO add your handling code here:
     }//GEN-LAST:event_btnexcluirActionPerformed
 

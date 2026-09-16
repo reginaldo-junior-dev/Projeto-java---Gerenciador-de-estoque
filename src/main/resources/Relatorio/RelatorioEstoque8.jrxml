@@ -21,10 +21,10 @@
     e.quanti_usada AS quanti_movimentada,
     e.movimentacao,
     DATE_FORMAT(e.data_ent_sai, '%d/%m/%Y') AS data
-FROM 
+FROM
     estoque e
-JOIN 
-    alimentos a ON e.id_alimento = a.id
+JOIN
+    alimento a ON e.id_alimento = a.id
 WHERE 
     e.data_ent_sai BETWEEN $P{dataInicial} AND $P{dataFinal}
 ORDER BY 
@@ -73,9 +73,6 @@ ORDER BY
 			</element>
 			<element kind="staticText" uuid="cfa21334-0634-4605-9ea7-aca4981f67e4" x="370" y="40" width="316" height="29" fontSize="22.0" bold="false" hTextAlign="Right" style="SubTitle">
 				<text><![CDATA[]]></text>
-			</element>
-			<element kind="image" uuid="9c22df7b-011a-4d6e-8bb2-ebe331fb986c" x="180" y="0" width="490" height="160">
-				<expression><![CDATA["C:/Users/junio/Downloads/alimentos_caxias (4).png"]]></expression>
 			</element>
 			<element kind="staticText" uuid="3ddc4236-93a3-41cf-9ddb-54e45f14ddd1" x="350" y="160" width="130" height="30" fontSize="22.0" bold="true">
 				<text><![CDATA[RELATÓRIO]]></text>

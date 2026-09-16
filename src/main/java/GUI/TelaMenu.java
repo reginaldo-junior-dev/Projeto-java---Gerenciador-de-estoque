@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package GUI;
-import com.mycompany.projetojava2.*;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;

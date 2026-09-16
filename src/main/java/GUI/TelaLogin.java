@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 /**
@@ -251,20 +252,19 @@ public class TelaLogin extends javax.swing.JFrame {
         Factory.ConnectionFactory connection = new Factory.ConnectionFactory();
         Connection conn = connection.getConnection();
         
-        String sql = "SELECT * FROM acesso WHERE login = ? AND senha = ?";
+        String sql = "SELECT * FROM acesso WHERE login = ?";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, login);
-        stmt.setString(2, senha);
         ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
+        if (rs.next() && BCrypt.checkpw(senha, rs.getString("senha"))) {
         String cargo = rs.getString("cargo");
-        
+
         if (cargo.equals("Administrador")) {
            JOptionPane.showMessageDialog(null, "Conectado com sucesso");
            TelaMenu tm = new TelaMenu();
            tm.setVisible(true);
            this.dispose();
-           
+
         } else if (cargo.equals("Funcionário")) {
            JOptionPane.showMessageDialog(null, "Conectado com sucesso");
            TelaMenuFunc tm = new TelaMenuFunc();
@@ -274,9 +274,11 @@ public class TelaLogin extends javax.swing.JFrame {
         } else {
            JOptionPane.showMessageDialog(null, "Login ou senha incorretos");
         }
-        
+
+        } else {
+           JOptionPane.showMessageDialog(null, "Login ou senha incorretos");
         }
-        
+
         rs.close();
         stmt.close();
        } catch (SQLException ex) {

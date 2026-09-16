@@ -94,20 +94,16 @@ public class AlimentoDAO {
 
  
 public boolean excluir(int id) {
-    
+
     String sqlEstoque = "DELETE FROM estoque WHERE id_alimento = ?";
     try (PreparedStatement stmtEstoque = connection.prepareStatement(sqlEstoque)) {
         stmtEstoque.setInt(1, id);
-        int rowsAffectedEstoque = stmtEstoque.executeUpdate();
-        
-        if (rowsAffectedEstoque == 0) {
-            return false; 
-        }
+        stmtEstoque.executeUpdate();
     } catch (SQLException e) {
         throw new RuntimeException("Erro ao excluir do estoque: ", e);
     }
-    
-    
+
+
     String sqlAlimento = "DELETE FROM alimento WHERE id = ?";
     try (PreparedStatement stmtAlimento = connection.prepareStatement(sqlAlimento)) {
         stmtAlimento.setInt(1, id);
